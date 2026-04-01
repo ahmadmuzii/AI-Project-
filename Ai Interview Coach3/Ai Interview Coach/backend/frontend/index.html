@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Interview Coach 🎤</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      text-align: center;
+    }
+    h2 {
+      color: #2c3e50;
+    }
+    h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      background-color: #3498db;
+      color: white;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    input[type="file"] {
+      margin: 15px 0;
+    }
+    #status {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #2980b9;
+    }
+    #transcript {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      min-height: 50px;
+      background-color: #f9f9f9;
+      white-space: pre-wrap;
+      text-align: left;
+      border-radius: 4px;
+    }
+    #feedback {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #4CAF50;
+      background-color: #e8f5e8;
+      white-space: pre-wrap;
+      text-align: left;
+      font-weight: 500;
+      border-radius: 4px;
+    }
+    #word-analysis {
+      margin-top: 20px;
+      text-align: left;
+      border: 1px solid #ff9800;
+      padding: 15px;
+      background-color: #fff3e0;
+      border-radius: 4px;
+    }
+    #word-analysis h3 {
+      color: #e65100;
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+    #word-analysis-list {
+      margin-top: 10px;
+    }
+    #word-analysis-list ul {
+      list-style-type: none;
+      padding-left: 0;
+      margin: 0;
+    }
+    #word-analysis-list li {
+      margin-bottom: 10px;
+      padding: 8px;
+      background: white;
+      border-left: 4px solid #ff9800;
+      border-radius: 0 4px 4px 0;
+    }
+    #word-analysis-list li strong {
+      color: #333;
+    }
+    #word-analysis-list li em {
+      color: #e65100;
+      font-style: italic;
+    }
+    #word-analysis-list li span {
+      color: #666;
+      display: block;
+      margin-top: 5px;
+      font-size: 0.95em;
+    }
+    audio {
+      margin-top: 15px;
+      width: 100%;
+      outline: none;
+    }
+    .section-label {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+
+<h2>AI Interview Coach 🎤</h2>
+
+<!-- Recording Controls -->
+<div>
+  <button onclick="startRecording()">Start Recording</button>
+  <button onclick="stopRecording()">Stop Recording</button>
+  <button onclick="uploadRecording()">Upload Recording</button>
+</div>
+
+<!-- Audio Playback -->
+<div>
+  <audio id="player" controls></audio>
+</div>
+
+<!-- File Upload Controls -->
+<div>
+  <input type="file" id="audioFile" accept=".wav,.mp3,.ogg">
+  <button onclick="uploadFile()">Upload Selected File</button>
+</div>
+
+<!-- Status Display -->
+<div id="status"></div>
+
+<!-- Transcript Display -->
+<div class="section-label">📝 Transcript</div>
+<div id="transcript" placeholder="Transcript will appear here..."></div>
+
+<!-- General Feedback Display -->
+<div class="section-label">💬 General Feedback</div>
+<div id="feedback"></div>
+
+<!-- Word-Level Analysis Display -->
+<div id="word-analysis">
+  <h3>🔍 Word-Level Improvement Areas</h3>
+  <div id="word-analysis-list"></div>
+</div>
+
+<script>
+let recorder;
+let audioChunks = [];
+let lastBlob = null; // for playback
+let currentUserId = null;
+let currentSessionId = null;
+const API_BASE = "http://127.0.0.1:8000";
+
+async function ensureUserAndSession() {
+  if (currentUserId && currentSessionId) return;
+
+  let name = localStorage.getItem("ai_ic_name") || "";
+  let email = localStorage.getItem("ai_ic_email") || "";
+
+  if (!name) {
+    name = prompt("Enter your name:", "Demo User") || "Demo User";
+    localStorage.setItem("ai_ic_name", name);
+  }
+  if (!email) {
+    const fallbackEmail = `demo_${Date.now()}@example.com`;
+    email = prompt("Enter your email:", fallbackEmail) || fallbackEmail;
+    localStorage.setItem("ai_ic_email", email);
+  }
+
+  const userRes = await fetch(`${API_BASE}/create-user`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email }),
+  });
+  if (!userRes.ok) throw new Error(`User create failed: ${userRes.status}`);
+  const userData = await userRes.json();
+  currentUserId = userData.user_id;
+
+  const sessionRes = await fetch(`${API_BASE}/start-session`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: currentUserId }),
+  });
+  if (!sessionRes.ok) throw new Error(`Session start failed: ${sessionRes.status}`);
+  const sessionData = await sessionRes.json();
+  currentSessionId = sessionData.session_id;
+}
+
+// Start recording
+async function startRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    recorder = new MediaRecorder(stream);
+    audioChunks = [];
+    lastBlob = null;
+
+    recorder.ondataavailable = event => {
+      audioChunks.push(event.data);
+    };
+
+    recorder.start();
+    document.getElementById("status").innerText = "Recording... 🎙️";
+    document.getElementById("player").src = "";
+    document.getElementById("transcript").innerText = "";
+    document.getElementById("feedback").innerText = "";
+    document.getElementById("word-analysis-list").innerHTML = "";
+  } catch (err) {
+    alert("Error accessing microphone: " + err.message);
+  }
+}
+
+// Stop recording and prepare playback
+function stopRecording() {
+  if (!recorder) return;
+
+  recorder.stop();
+
+  recorder.onstop = () => {
+    const blob = new Blob(audioChunks, { type: "audio/wav" });
+    lastBlob = blob;
+
+    // Prepare playback
+    const player = document.getElementById("player");
+    player.src = URL.createObjectURL(blob);
+
+    document.getElementById("status").innerText = "Recording stopped. Ready to play or upload 🎧";
+    audioChunks = [];
+  };
+}
+
+// Upload recorded audio
+async function uploadRecording() {
+  if (!lastBlob) {
+    alert("No recording available to upload!");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", lastBlob, "recording.wav");
+
+  await sendAudio(formData);
+}
+
+// Upload audio selected from file input
+async function uploadFile() {
+  const fileInput = document.getElementById("audioFile");
+  if (!fileInput.files.length) {
+    alert("Please select an audio file first!");
+    return;
+  }
+
+  const file = fileInput.files[0];
+  const formData = new FormData();
+  formData.append("file", file, file.name);
+
+  await sendAudio(formData);
+}
+
+// Helper function to send audio to FastAPI
+async function sendAudio(formData) {
+  document.getElementById("status").innerText = "Uploading audio... ⏳";
+  document.getElementById("transcript").innerText = "";
+  document.getElementById("feedback").innerText = "";
+  document.getElementById("word-analysis-list").innerHTML = "";
+
+  try {
+    await ensureUserAndSession();
+    formData.append("user_id", String(currentUserId));
+    formData.append("session_id", String(currentSessionId));
+
+    const response = await fetch(`${API_BASE}/upload-audio`, {
+      method: "POST",
+      body: formData
+    });
+
+    if (!response.ok) throw new Error(`Server error: ${response.status}`);
+
+    const data = await response.json();
+    
+    document.getElementById("status").innerText = "Upload successful ✅";
+    document.getElementById("transcript").innerText = data.transcript;
+    document.getElementById("feedback").innerText = data.feedback;
+    
+    // Display word-level analysis
+    const wordAnalysisDiv = document.getElementById("word-analysis-list");
+    if (data.word_analysis && data.word_analysis.length > 0) {
+      let html = "<ul>";
+      data.word_analysis.forEach(item => {
+        html += `<li>
+          <strong>[${item.time}] "${item.word}"</strong> – 
+          <em>${item.issue.replace(/_/g, ' ')}</em><br>
+          <span>💡 ${item.suggestion}</span>
+        </li>`;
+      });
+      html += "</ul>";
+      wordAnalysisDiv.innerHTML = html;
+    } else {
+      wordAnalysisDiv.innerHTML = "<p style='color: #666; margin:0;'>✨ No specific word issues detected – great job!</p>";
+    }
+  } catch (err) {
+    document.getElementById("status").innerText = "Error uploading audio ❌";
+    alert(err);
+  }
+}
+</script>
+
+</body>
+</html>
