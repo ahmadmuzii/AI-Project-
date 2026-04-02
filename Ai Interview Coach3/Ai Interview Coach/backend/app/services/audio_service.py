@@ -9,7 +9,7 @@ from .analysis_service import (
     compute_lexical_features,
     compute_acoustic_features,
     compute_scores,
-    generate_feedback   # now returns dict
+    generate_feedback
 )
 
 UPLOAD_DIR = "uploads"
@@ -23,7 +23,6 @@ async def save_and_transcribe(file, model):
     with open(filepath, "wb") as f:
         f.write(contents)
 
-    # Transcribe with word timestamps
     result = await asyncio.to_thread(
         model.transcribe,
         filepath,
@@ -34,15 +33,13 @@ async def save_and_transcribe(file, model):
     segments = result["segments"]
     words = extract_words_with_timestamps(segments)
 
-    # Compute all feature groups
     temporal = compute_temporal_features(words)
     fluency = compute_fluency_features(words)
     lexical = compute_lexical_features(words)
     acoustic = compute_acoustic_features(filepath)
     scores = compute_scores(temporal, fluency, lexical, acoustic)
 
-    # Generate feedback (now returns dict with 'general' and 'word_analysis')
-    feedback_result = generate_feedback(temporal, fluency, lexical, acoustic, scores, words)
+    feedback_result = generate_feedback(temporal, fluency, lexical, acoustic, scores, words, transcript)
 
     return {
         "filepath": filepath,
@@ -52,6 +49,6 @@ async def save_and_transcribe(file, model):
         "lexical": lexical,
         "acoustic": acoustic,
         "scores": scores,
-        "feedback": feedback_result["general"],          # for backward compatibility
-        "word_analysis": feedback_result["word_analysis"]  # new field
+        "feedback": feedback_result["general"],
+        "word_analysis": feedback_result["word_analysis"]
     }
