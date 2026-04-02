@@ -2,6 +2,65 @@ import numpy as np
 import librosa
 import random
 import math  # for formatting time
+import os
+
+# ---------- Groq LLM Feedback ----------
+def generate_llm_feedback(temporal, fluency, lexical, acoustic, scores, transcript):
+    try:
+        from groq import Groq
+
+        api_key = os.environ.get("GROQ_API_KEY")
+        print(f"GROQ_API_KEY found: {bool(api_key)}")
+        print(f"Key starts with: {api_key[:8] if api_key else 'NONE'}")
+        if not api_key:
+            return None
+
+        client = Groq(api_key=api_key)
+
+        prompt = f"""You are an expert interview coach. Analyze the following speech metrics from a candidate's interview response and provide personalized, actionable coaching feedback.
+
+TRANSCRIPT:
+{transcript}
+
+SPEECH METRICS:
+- Speaking Rate: {temporal['wpm']} words per minute (ideal: 120-160 WPM)
+- Total Duration: {temporal['total_duration']} seconds
+- Long Pauses: {temporal['long_pause_count']} pauses over 1.2 seconds
+- Average Pause: {temporal['avg_pause']} seconds
+- Filler Words (um, uh, like, etc.): {fluency['filler_count']} times ({fluency['filler_ratio']*100:.1f}% of words)
+- Word Repetitions: {fluency['repetition_count']}
+- Hedging Words (maybe, I think, probably): {lexical['hedge_count']}
+- Vocabulary Variety (TTR): {lexical['ttr']:.2f} (1.0 = all unique words)
+- Pitch Variation: {acoustic['pitch_std']:.2f} Hz
+- Voice Energy: {acoustic['energy_mean']:.4f}
+
+SCORES (0 to 1):
+- Fluency: {scores['fluency']}
+- Confidence: {scores['confidence']}
+- Composure: {scores['composure']}
+- Overall: {scores['overall']}
+
+Please provide:
+1. A brief overall assessment (1-2 sentences)
+2. The top 2-3 specific areas to improve with concrete, practical tips
+3. One thing they did well (if applicable)
+4. An encouraging closing sentence
+
+Keep the feedback conversational, specific to their actual metrics, and between 150-250 words. Do not use bullet points or headers — write it as natural flowing paragraphs like a real coach would speak."""
+
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=400,
+            temperature=0.7,
+        )
+
+        return response.choices[0].message.content.strip()
+
+    except Exception as e:
+        print(f"Groq feedback failed: {e}")
+        return None  # Fall back to rule-based
+
 
 # ---------- Helper: format time (seconds -> MM:SS) ----------
 def format_time(seconds):
@@ -16,24 +75,19 @@ def analyze_word_level(words):
     Analyze each word and return a list of issues (dictionaries) for words
     that need improvement.
     """
-    # Safety check: if words is None or empty, return empty list
-    # THIS MUST COME BEFORE ANY LIST COMPREHENSION
     if words is None or len(words) == 0:
         return []
     
     issues = []
     
-    # Now it's safe to create word_texts
     try:
         word_texts = [w["word"].lower() for w in words if isinstance(w, dict) and "word" in w]
     except (TypeError, KeyError, AttributeError):
-        return []  # If we can't process words, return empty issues list
+        return []
 
-    # Precompute pauses (gaps between words)
     pauses = []
     for i in range(len(words)-1):
         try:
-            # Ensure both words have required keys
             if not isinstance(words[i], dict) or not isinstance(words[i+1], dict):
                 pauses.append(0)
                 continue
@@ -45,13 +99,11 @@ def analyze_word_level(words):
         except (TypeError, KeyError):
             pauses.append(0)
 
-    # Constants
     LONG_PAUSE_THRESHOLD = 1.2
     FILLER_WORDS = {"um", "uh", "like", "you know", "actually", "basically", "literally"}
     HEDGE_WORDS = {"maybe", "i think", "probably", "kind of", "sort of", "perhaps", "might"}
 
     for i, w in enumerate(words):
-        # Safety check: ensure word is a dict and has required keys
         if not isinstance(w, dict):
             continue
         if "word" not in w or "start" not in w or "end" not in w:
@@ -64,7 +116,6 @@ def analyze_word_level(words):
         except (AttributeError, KeyError):
             continue
 
-        # 1. Filler words
         if word in FILLER_WORDS:
             issues.append({
                 "time": format_time(start),
@@ -73,7 +124,6 @@ def analyze_word_level(words):
                 "suggestion": "Replace with a brief pause or remove it. Filler words reduce clarity."
             })
 
-        # 2. Hedge words
         if word in HEDGE_WORDS:
             issues.append({
                 "time": format_time(start),
@@ -82,7 +132,6 @@ def analyze_word_level(words):
                 "suggestion": "Use more definitive language to sound confident. For example, say 'I will' instead of 'I think I will'."
             })
 
-        # 3. Repetitions (check consecutive words)
         if i > 0 and i < len(word_texts) and word_texts[i] == word_texts[i-1]:
             issues.append({
                 "time": format_time(start),
@@ -91,7 +140,6 @@ def analyze_word_level(words):
                 "suggestion": "You repeated this word. Slow down and avoid echoing the same word."
             })
 
-        # 4. Long pause before this word (if not first word)
         if i > 0 and i-1 < len(pauses) and pauses[i-1] > LONG_PAUSE_THRESHOLD:
             issues.append({
                 "time": format_time(start),
@@ -102,10 +150,9 @@ def analyze_word_level(words):
 
     return issues
 
-# ---------- Extract words with timestamps (FIXED) ----------
+# ---------- Extract words with timestamps ----------
 def extract_words_with_timestamps(segments):
     """Return list of dicts with 'word', 'start', 'end' for each word."""
-    # Safety check
     if segments is None:
         return []
         
@@ -127,7 +174,6 @@ def extract_words_with_timestamps(segments):
     return words
 
 def compute_temporal_features(words):
-    # Safety check
     if not words or len(words) < 2:
         return {
             "total_duration": 0,
@@ -154,10 +200,8 @@ def compute_temporal_features(words):
                 pauses.append(0)
 
         avg_pause = np.mean(pauses) if pauses else 0
-
         long_pause_threshold = 1.2
         long_pause_count = sum(1 for p in pauses if p > long_pause_threshold)
-
         pause_rate = (long_pause_count / total_duration) * 60 if total_duration > 0 else 0
 
         return {
@@ -179,7 +223,6 @@ def compute_temporal_features(words):
 FILLER_WORDS = {"um", "uh", "like", "you know", "actually", "basically", "literally"}
 
 def compute_fluency_features(words):
-    # Safety check
     if not words:
         return {"repetition_count": 0, "repetition_rate": 0, "filler_count": 0, "filler_ratio": 0}
     
@@ -209,7 +252,6 @@ def compute_fluency_features(words):
 HEDGE_WORDS = {"maybe", "i think", "probably", "kind of", "sort of", "perhaps", "might"}
 
 def compute_lexical_features(words):
-    # Safety check
     if not words:
         return {"hedge_count": 0, "hedge_ratio": 0, "unique_words": 0, "ttr": 0}
     
@@ -221,7 +263,6 @@ def compute_lexical_features(words):
             return {"hedge_count": 0, "hedge_ratio": 0, "unique_words": 0, "ttr": 0}
 
         hedge_count = sum(1 for w in word_texts if w in HEDGE_WORDS)
-
         unique_words = len(set(word_texts))
         ttr = unique_words / total_words
 
@@ -239,7 +280,7 @@ def compute_acoustic_features(filepath):
         y, sr = librosa.load(filepath, sr=16000)
 
         f0, voiced_flag, voiced_probs = librosa.pyin(
-        y,
+            y,
             fmin=float(librosa.note_to_hz('C2')),
             fmax=float(librosa.note_to_hz('C7'))
         )
@@ -321,43 +362,26 @@ def compute_scores(temporal, fluency, lexical, acoustic):
             "overall": 0
         }
 
-# ---------- Modified generate_feedback ----------
-def generate_feedback(temporal, fluency, lexical, acoustic, scores, words):
-    """
-    Generate general feedback (text) and word-level analysis (list of dicts).
-    Returns a dict with keys 'general' and 'word_analysis'.
-    """
-    # Safety check for words
-    if words is None:
-        words = []
-    
-    # 1. Word-level analysis
-    word_analysis = analyze_word_level(words)
-
-    # 2. General feedback (same as before, but we'll build it into a variable)
-    if temporal["total_duration"] == 0:
-        general = "No speech detected. Please try again with a longer recording."
-        return {"general": general, "word_analysis": word_analysis}
-
+# ---------- Rule-Based Feedback (Fallback) ----------
+def generate_rule_based_feedback(temporal, fluency, lexical, acoustic, scores):
     feedback_parts = []
 
-    # ----- Timing & Pace -----
+    if temporal["total_duration"] == 0:
+        return "No speech detected. Please try again with a longer recording."
+
     wpm = temporal["wpm"]
     pace_templates = {
         "slow": [
             "Your speaking rate of {wpm} words per minute is on the slower side. This can make you sound hesitant or uncertain. Try practicing with a metronome at 120-140 bpm to gradually increase your pace.",
             "At {wpm} WPM, you're speaking below the typical conversational range (120-160 WPM). Consider reading aloud daily to build momentum and reduce those longer pauses between phrases.",
-            "Your current pace ({wpm} WPM) suggests you might be thinking too much while speaking. A helpful exercise: record yourself answering common interview questions, then practice delivering them more fluidly without the thinking pauses."
         ],
         "good": [
             "Your speaking rate of {wpm} WPM falls within the optimal range for interviews. This pace is conversational yet professional, giving you credibility while remaining easy to follow.",
-            "Great job maintaining {wpm} words per minute! This balanced pace shows you're comfortable with the material without rushing. You're in the sweet spot for keeping listener engagement.",
-            "At {wpm} WPM, you've found the ideal tempo - not too fast to seem rehearsed, not too slow to lose attention. This natural flow builds rapport with interviewers."
+            "Great job maintaining {wpm} words per minute! This balanced pace shows you're comfortable with the material without rushing.",
         ],
         "fast": [
             "You're speaking at {wpm} WPM, which is quite rapid. Fast speech can signal nervousness and make it harder for interviewers to absorb your key points. Practice inserting micro-pauses after important statements.",
-            "Your rapid pace ({wpm} WPM) might be overwhelming listeners. Try the 'comma technique' - mentally insert commas between ideas and actually pause there. This gives you breathing room and your audience time to process.",
-            "At {wpm} words per minute, you're in danger of sounding rehearsed or anxious. Slow down by 10-15% and notice how much more authoritative you sound. Your key achievements deserve to be heard clearly."
+            "Your rapid pace ({wpm} WPM) might be overwhelming listeners. Try the 'comma technique' - mentally insert commas between ideas and actually pause there.",
         ]
     }
     if wpm < 100:
@@ -368,125 +392,65 @@ def generate_feedback(temporal, fluency, lexical, acoustic, scores, words):
         pace_key = "fast"
     feedback_parts.append(random.choice(pace_templates[pace_key]).format(wpm=wpm))
 
-    # ----- Pause Analysis -----
     if temporal["long_pause_count"] > 0:
-        pause_templates = [
-            f"I noticed {temporal['long_pause_count']} significant pauses (over 1.2 seconds) in your speech. While occasional pauses are natural, extended silences can disrupt your flow. Try using transitional phrases like 'Let me think about that' or 'That's an excellent question' to buy thinking time naturally.",
-            f"Your recording contained {temporal['long_pause_count']} lengthy pauses. This often happens when we're searching for the right word. A powerful technique: memorize 3-5 bridging phrases that you can use instinctively when you need a moment to gather thoughts.",
-            f"With {temporal['long_pause_count']} long pauses detected, your speech has some choppy moments. Try the 'continuous speaking' exercise: pick any topic and speak for 2 minutes without stopping - even if you repeat yourself."
-        ]
-        feedback_parts.append(random.choice(pause_templates))
+        feedback_parts.append(
+            f"I noticed {temporal['long_pause_count']} significant pauses (over 1.2 seconds) in your speech. "
+            f"While occasional pauses are natural, extended silences can disrupt your flow. "
+            f"Try using transitional phrases like 'Let me think about that' to buy thinking time naturally."
+        )
 
-    # ----- Filler Words -----
     if fluency["filler_ratio"] > 0.03:
-        filler_templates = [
-            f"Filler words like 'um', 'uh', and 'like' appeared {fluency['filler_count']} times in your speech ({fluency['filler_ratio']*100:.1f}% of total words). These small words can undermine your authority. Try the 'pause instead' technique: whenever you feel 'um' coming, simply pause.",
-            f"You used {fluency['filler_count']} filler words in this recording. Each one is a tiny credibility leak. A practical fix: record yourself daily and count your fillers. Awareness alone reduces them by 30-40% within a week.",
-            f"Your filler word density is {fluency['filler_ratio']*100:.1f}%. To sound more polished, practice the 'prepared pause' technique. When you need to think, pause deliberately for 1-2 seconds instead of filling with 'um'."
-        ]
-        feedback_parts.append(random.choice(filler_templates))
+        feedback_parts.append(
+            f"Filler words appeared {fluency['filler_count']} times ({fluency['filler_ratio']*100:.1f}% of total words). "
+            f"Try the 'pause instead' technique: whenever you feel 'um' coming, simply pause silently."
+        )
     else:
-        if random.choice([True, False]):  # Occasionally give positive reinforcement
-            good_filler_templates = [
-                f"Excellent control over filler words! Only {fluency['filler_count']} in this recording shows real polish. This makes you sound confident and well-prepared.",
-                f"Your minimal use of filler words ({fluency['filler_count']}) is impressive. Clean speech like this signals executive presence and clarity of thought.",
-                f"Great job keeping filler words to just {fluency['filler_count']} instances. This level of fluency is what top performers achieve with practice."
-            ]
-            feedback_parts.append(random.choice(good_filler_templates))
+        feedback_parts.append(
+            f"Great job keeping filler words to just {fluency['filler_count']} instances. "
+            f"This level of fluency is what top performers achieve with practice."
+        )
 
-    # ----- Repetitions -----
-    if fluency["repetition_rate"] > 0.02:
-        rep_templates = [
-            f"I detected some word repetitions in your speech. This often happens when we're thinking ahead while still speaking. Try slowing down slightly and finishing your current thought completely before moving to the next one.",
-            f"Repetitions can make you sound uncertain. A helpful exercise: practice explaining complex topics to a friend and ask them to signal whenever you repeat yourself.",
-            f"Your repetition rate suggests you might be circling around ideas instead of stating them directly. Try writing out key points before speaking and sticking to that structure."
-        ]
-        feedback_parts.append(random.choice(rep_templates))
-
-    # ----- Hedging -----
     if lexical["hedge_ratio"] > 0.04:
-        hedge_templates = [
-            f"Hedging words like 'maybe', 'I think', and 'probably' appeared frequently. These words subtly undermine your confidence. Practice making definitive statements - instead of 'I think I could...' try 'I can...'",
-            f"Your speech contained several tentative phrases. While diplomacy has its place, interviews reward directness. Try reviewing your transcript and rewriting each hedged statement as a confident assertion.",
-            f"Hedging language can make you sound less authoritative. The next time you practice, challenge yourself to eliminate all qualifying words. You'll sound noticeably more confident."
-        ]
-        feedback_parts.append(random.choice(hedge_templates))
+        feedback_parts.append(
+            "Hedging words like 'maybe', 'I think', and 'probably' appeared frequently. "
+            "Practice making definitive statements - instead of 'I think I could...' try 'I can...'"
+        )
 
-    # ----- Vocabulary Richness -----
-    if lexical["ttr"] < 0.6 and lexical["unique_words"] > 10:
-        ttr_templates = [
-            f"Your vocabulary variety (Type-Token Ratio: {lexical['ttr']:.2f}) suggests some word repetition. Expanding your active vocabulary for interview topics can make you sound more articulate. Try learning 3 new synonyms each week for common interview words.",
-            f"With a TTR of {lexical['ttr']:.2f}, you're using a limited vocabulary set. This is normal in conversation, but interviews reward precision. Practice describing your experience using varied, specific language.",
-            f"Your word choice shows some repetition patterns. To sound more sophisticated, prepare 2-3 ways to describe each of your key accomplishments. Variety signals mastery."
-        ]
-        feedback_parts.append(random.choice(ttr_templates))
-
-    # ----- Score-Based Feedback -----
-    if scores["fluency"] < 0.6:
-        fluency_score_templates = [
-            f"Your fluency score of {scores['fluency']:.2f} indicates room for improvement in smoothness. Focus on reducing pauses and filler words through daily practice.",
-            f"At {scores['fluency']:.2f}, your fluency is the area with most growth potential. Try the 'continuous speech' exercise: speak for 90 seconds without stopping on any topic.",
-            f"To boost your fluency score from {scores['fluency']:.2f}, practice linking your ideas with transition phrases like 'building on that point' or 'another aspect to consider'."
-        ]
-        feedback_parts.append(random.choice(fluency_score_templates))
-
-    if scores["confidence"] < 0.6:
-        confidence_score_templates = [
-            f"Your confidence score of {scores['confidence']:.2f} suggests vocal uncertainty. Work on eliminating hedging words and stabilizing your pitch through breathing exercises.",
-            f"To improve your confidence score ({scores['confidence']:.2f}), practice speaking slightly louder and with more varied intonation. Record yourself and listen for tentative phrases.",
-            f"The confidence score ({scores['confidence']:.2f}) reflects both word choice and vocal stability. Try power poses before speaking and practice stating your achievements without qualifiers."
-        ]
-        feedback_parts.append(random.choice(confidence_score_templates))
-
-    if scores["composure"] < 0.6:
-        composure_score_templates = [
-            f"Your composure score of {scores['composure']:.2f} indicates some vocal tension. Deep breathing before speaking can help. Also try to consciously relax your jaw and shoulders while talking.",
-            f"To improve composure ({scores['composure']:.2f}), practice speaking in a slightly lower pitch range. Lower voices typically sound more composed and authoritative.",
-            f"The composure score suggests some nervous energy in your voice. Try the 'pause and breathe' technique: before answering any question, take a deliberate breath."
-        ]
-        feedback_parts.append(random.choice(composure_score_templates))
-
-    # ----- Overall Summary -----
     if scores["overall"] > 0.8:
-        summary_templates = [
-            f"\n\nOverall, you delivered a strong performance with a score of {scores['overall']:.2f}. Your speech is clear, confident, and well-paced. The suggestions above will help you move from good to exceptional. Keep practicing daily - you're on the right track!",
-            f"\n\nGreat work! Your overall score of {scores['overall']:.2f} shows you have strong interview communication skills. Focus on the specific areas mentioned to polish your delivery even further. Consistency is key - record yourself weekly to track improvement.",
-            f"\n\nWith an overall score of {scores['overall']:.2f}, you're already performing well above average. The refinements suggested above will help you achieve that elite level of communication that distinguishes top candidates."
-        ]
+        feedback_parts.append(f"\n\nOverall, you delivered a strong performance with a score of {scores['overall']:.2f}. Keep practicing daily - you're on the right track!")
     elif scores["overall"] > 0.6:
-        summary_templates = [
-            f"\n\nYour overall score of {scores['overall']:.2f} shows solid foundational skills with room to grow. The areas highlighted above are your quickest path to improvement. With focused practice on these specific points, you could see significant gains in just 2-3 weeks.",
-            f"\n\nAt {scores['overall']:.2f}, you have good interview mechanics but some patterns are holding you back. The feedback above targets your biggest opportunities. Pick just ONE area to focus on this week - mastering it will pull other metrics up naturally.",
-            f"\n\nYour overall score of {scores['overall']:.2f} places you in the developing range. The good news: the metrics above show exactly where to focus. Start with reducing filler words - it's often the highest-impact change you can make quickly."
-        ]
+        feedback_parts.append(f"\n\nYour overall score of {scores['overall']:.2f} shows solid foundational skills with room to grow. With focused practice, you could see significant gains in just 2-3 weeks.")
     else:
-        summary_templates = [
-            f"\n\nYour overall score of {scores['overall']:.2f} suggests you're still building your interview communication skills. This is completely normal and improvable with structured practice. Don't be discouraged - every great communicator started exactly where you are. Focus on one metric at a time and record yourself weekly to see progress.",
-            f"\n\nWith an overall score of {scores['overall']:.2f}, you have clear opportunities for growth. The analysis above isn't criticism - it's a roadmap. Professional speakers and executives all worked on these exact skills. Your journey to mastery starts with awareness, and now you have it.",
-            f"\n\nYour score of {scores['overall']:.2f} reflects where many people start before focused practice. The beauty of this system is that every metric is improvable. Choose the lowest score among fluency, confidence, or composure and make that your priority for the next two weeks."
-        ]
-    feedback_parts.append(random.choice(summary_templates))
+        feedback_parts.append(f"\n\nYour overall score of {scores['overall']:.2f} suggests you're still building your interview communication skills. Focus on one metric at a time and record yourself weekly to see progress.")
 
-    # Combine general feedback
-    general = " ".join(feedback_parts)
+    return " ".join(feedback_parts)
 
-    # Word count enforcement (optional, but we keep it for general feedback)
-    word_count = len(general.split())
-    if word_count < 30:
-        filler_templates = [
-            " Remember that consistent practice is key to improvement. Try recording yourself daily, even for just 2 minutes, and track your progress on these metrics over time.",
-            " The best speakers weren't born great - they practiced deliberately. Focus on one area at a time, and you'll see steady improvement in your scores.",
-            " Consider joining a speaking group or practicing with a friend who can give you real-time feedback on these specific areas.",
-            " Recording yourself is the first step. Now that you have this baseline data, you can track improvement over the coming weeks.",
-            " Every point of improvement in these scores translates to more confident, compelling interviews. Keep up the great work!"
-        ]
-        general += random.choice(filler_templates)
-        if len(general.split()) < 30:
-            general += " " + random.choice([
-                "Small daily improvements lead to stunning results over time.",
-                "The key is consistency - practice a little every day rather than for hours once a week.",
-                "You're building a skill that will serve you throughout your entire career.",
-                "Each recording makes you more aware of your speech patterns, and awareness is the first step to improvement."
-            ])
+
+# ---------- Main generate_feedback ----------
+def generate_feedback(temporal, fluency, lexical, acoustic, scores, words, transcript=""):
+    """
+    Generate general feedback (text) and word-level analysis (list of dicts).
+    Tries Groq LLM first, falls back to rule-based if unavailable.
+    Returns a dict with keys 'general' and 'word_analysis'.
+    """
+    if words is None:
+        words = []
+
+    # 1. Word-level analysis (always rule-based)
+    word_analysis = analyze_word_level(words)
+
+    # 2. Try LLM feedback first
+    if temporal["total_duration"] == 0:
+        general = "No speech detected. Please try again with a longer recording."
+        return {"general": general, "word_analysis": word_analysis}
+
+    llm_feedback = generate_llm_feedback(temporal, fluency, lexical, acoustic, scores, transcript)
+
+    if llm_feedback:
+        general = llm_feedback
+        print("✅ Using Groq LLM feedback")
+    else:
+        general = generate_rule_based_feedback(temporal, fluency, lexical, acoustic, scores)
+        print("⚠️  Using rule-based feedback (Groq unavailable)")
 
     return {"general": general, "word_analysis": word_analysis}
