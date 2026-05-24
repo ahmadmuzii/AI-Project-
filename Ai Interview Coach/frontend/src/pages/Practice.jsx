@@ -116,7 +116,6 @@ export default function Practice() {
           <div>
             <div className="flex center gap-12" style={{ justifyContent: 'flex-start' }}>
               <h1 className="section-title" style={{ fontSize: '1.75rem', margin: 0 }}>Review Center</h1>
-              <span className="grok-badge">⚡ Grok Evaluated</span>
             </div>
             <p className="section-sub" style={{ margin: '4px 0 0 0' }}>Analyze recordings, review speech analytics, and study guided session history</p>
           </div>
@@ -128,7 +127,7 @@ export default function Practice() {
         </div>
 
         {error && (
-          <div className="card" style={{ borderLeft: '4px solid var(--red)', color: 'var(--red)', marginBottom: 20, fontSize: '0.9rem' }}>
+          <div className="apple-glass" style={{ borderLeft: '4px solid var(--red)', color: 'var(--red)', marginBottom: 20, fontSize: '0.9rem' }}>
             <div className="flex" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
               <span>{error}</span>
               <button className="btn btn-secondary" style={{ padding: '2px 8px', fontSize: '0.78rem' }} onClick={() => setError(null)}>Dismiss</button>
@@ -198,7 +197,7 @@ export default function Practice() {
                 
                 {/* Left Sidebar */}
                 <div style={{ width: '100%', maxWidth: 280, flexShrink: 0 }}>
-                  <div className="card" style={{ padding: 18, height: 'fit-content' }}>
+                  <div className="apple-glass" style={{ padding: 18, height: 'fit-content' }}>
                     <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>
                       Sessions ({sessions.length})
                     </div>
@@ -295,7 +294,7 @@ export default function Practice() {
                           return (
                             <motion.div
                               key={rec.id}
-                              className="card"
+                              className="apple-glass"
                               style={{ padding: 18, border: isExpanded ? '1px solid var(--border2)' : '1px solid var(--border)' }}
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
@@ -406,7 +405,7 @@ export default function Practice() {
                     )}
 
                     {recordings.length === 0 && currentSession && (
-                      <div className="card" style={{ textAlign: 'center', padding: 64 }}>
+                      <div className="apple-glass" style={{ textAlign: 'center', padding: 64 }}>
                         <div style={{ fontSize: '3rem', marginBottom: 12 }}>🎙️</div>
                         <h4 style={{ fontWeight: 700, marginBottom: 4 }}>Empty Practice Session</h4>
                         <p style={{ color: 'var(--text2)', fontSize: '0.88rem', maxWidth: 360, margin: '0 auto 16px' }}>
@@ -419,7 +418,7 @@ export default function Practice() {
                     )}
 
                     {!currentSession && sessions.length === 0 && (
-                      <div className="card" style={{ textAlign: 'center', padding: 80 }}>
+                      <div className="apple-glass" style={{ textAlign: 'center', padding: 80 }}>
                         <div style={{ fontSize: '3.5rem', marginBottom: 16 }}>🎯</div>
                         <h3 style={{ fontWeight: 800, fontSize: '1.25rem', marginBottom: 6 }}>Start Self-Practice</h3>
                         <p style={{ color: 'var(--text2)', fontSize: '0.88rem', maxWidth: 440, margin: '0 auto 20px' }}>
@@ -445,7 +444,7 @@ export default function Practice() {
                 transition={{ duration: 0.35 }}
               >
                 {guidedInterviews.length === 0 ? (
-                  <div className="card" style={{ textAlign: 'center', padding: 80 }}>
+                  <div className="apple-glass" style={{ textAlign: 'center', padding: 80 }}>
                     <div style={{ fontSize: '3.5rem', marginBottom: 16, filter: 'drop-shadow(0 0 10px rgba(139,92,246,0.2))' }}>💼</div>
                     <h3 style={{ fontWeight: 800, fontSize: '1.25rem', marginBottom: 6 }}>No Guided Interviews Yet</h3>
                     <p style={{ color: 'var(--text2)', fontSize: '0.88rem', maxWidth: 480, margin: '0 auto 24px' }}>
@@ -463,12 +462,11 @@ export default function Practice() {
                       return (
                         <motion.div
                           key={gi.id}
-                          className="card"
+                          className="apple-glass"
                           whileHover={{ y: -3, scale: 1.01, border: '1px solid var(--border2)' }}
-                          transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                          transition={{ type: 'spring', stiffness: 350, damping: 25, delay: idx * 0.05 }}
                           initial={{ opacity: 0, y: 12 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: idx * 0.05 }}
                           style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: 220 }}
                         >
                           <div>

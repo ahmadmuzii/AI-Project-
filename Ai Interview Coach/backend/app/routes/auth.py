@@ -11,11 +11,13 @@ from passlib.context import CryptContext
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
+from app.config import JWT_SECRET_KEY
 from app.database import get_db
 from app.models import User
 from app.utils.pdf_extractor import extract_text_from_pdf
+from app.utils.rate_limiter import check_rate_limit
 
-SECRET_KEY = "aic-secret-key-change-in-production-2026"
+SECRET_KEY = JWT_SECRET_KEY
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
 
@@ -163,6 +165,7 @@ def _profile_to_dict(user: User) -> dict:
 
 @router.post("/register", response_model=TokenOut)
 def register(body: RegisterBody, db: Session = Depends(get_db)):
+    check_rate_limit(f"register:{body.email.strip().lower()}")
     existing = db.query(User).filter(User.email == body.email.strip().lower()).first()
     if existing:
         raise HTTPException(status_code=409, detail="Email already registered")
@@ -185,6 +188,7 @@ def register(body: RegisterBody, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=TokenOut)
 def login(body: LoginBody, db: Session = Depends(get_db)):
+    check_rate_limit(f"login:{body.email.strip().lower()}")
     user = db.query(User).filter(User.email == body.email.strip().lower()).first()
     if not user:
         raise HTTPException(status_code=401, detail="Invalid email or password")
@@ -339,7 +343,7 @@ async def upload_resume(
         raise HTTPException(status_code=400, detail="Could not extract text from PDF")
 
     user = db.get(User, current_user.id)
-    user.resume_text = text[:10000]
+    user.resume_text = text[:50000]
     db.commit()
 
     return {"resume_text": user.resume_text}

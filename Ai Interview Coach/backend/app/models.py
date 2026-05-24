@@ -51,7 +51,6 @@ class User(Base):
 
     # Auth & meta
     profile_completed: Mapped[bool] = mapped_column(Boolean, default=False)
-    refresh_token: Mapped[str | None] = mapped_column(String(512), nullable=True)
 
     sessions: Mapped[list["InterviewSession"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"

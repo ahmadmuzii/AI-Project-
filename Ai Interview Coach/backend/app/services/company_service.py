@@ -1,5 +1,6 @@
 import csv
 import random
+import time
 from collections import defaultdict
 from pathlib import Path
 
@@ -11,11 +12,14 @@ CSV_PATH = DATA_DIR / "swe_questions.csv"
 # ──────────────────────────────────────────────
 
 _question_cache = None
+_CACHE_TTL = 300
+_last_loaded = 0
 
 
 def load_question_bank() -> dict[str, list[dict]]:
-    global _question_cache
-    if _question_cache is not None:
+    global _question_cache, _last_loaded
+    now = time.time()
+    if _question_cache is not None and (now - _last_loaded) < _CACHE_TTL:
         return _question_cache
 
     bank = defaultdict(list)
@@ -35,6 +39,7 @@ def load_question_bank() -> dict[str, list[dict]]:
             })
 
     _question_cache = dict(bank)
+    _last_loaded = now
     print(f"Loaded {sum(len(v) for v in bank.values())} questions across {len(bank)} categories")
     return _question_cache
 

@@ -113,13 +113,13 @@ export default function SettingsPage() {
   return (
     <div>
       <Navbar />
-      <div style={{ padding: '80px 24px 40px', maxWidth: 720, margin: '0 auto' }}>
+      <div style={{ padding: '90px 24px 40px', maxWidth: 720, margin: '0 auto' }}>
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>Settings</h1>
           <p style={{ color: 'var(--text2)', fontSize: '0.9rem', marginBottom: 24 }}>Account & app preferences</p>
 
           {/* Change Password */}
-          <div className="card" style={{ marginBottom: 16 }}>
+          <div className="apple-glass" style={{ marginBottom: 16 }}>
             <div style={sectionTitle}>Change Password</div>
             {pwMsg && (
               <div style={{ padding: '8px 12px', marginBottom: 12, borderRadius: 8,
@@ -141,7 +141,7 @@ export default function SettingsPage() {
           </div>
 
           {/* Notifications */}
-          <div className="card" style={{ marginBottom: 16 }}>
+          <div className="apple-glass" style={{ marginBottom: 16 }}>
             <div style={sectionTitle}>Notifications</div>
             {notifyMsg && (
               <div style={{ padding: '8px 12px', marginBottom: 12, borderRadius: 8,
@@ -169,7 +169,7 @@ export default function SettingsPage() {
           </div>
 
           {/* ElevenLabs */}
-          <div className="card" style={{ marginBottom: 16 }}>
+          <div className="apple-glass" style={{ marginBottom: 16 }}>
             <div style={sectionTitle}>AI Voice (ElevenLabs)</div>
             {elevenlabsMsg && (
               <div style={{ padding: '8px 12px', marginBottom: 12, borderRadius: 8,
@@ -208,7 +208,7 @@ export default function SettingsPage() {
           </div>
 
           {/* Delete Account */}
-          <div className="card" style={{ marginBottom: 16, borderColor: 'var(--red)' }}>
+          <div className="apple-glass" style={{ marginBottom: 16, borderColor: 'var(--red)' }}>
             <div style={{ ...sectionTitle, color: 'var(--red)' }}>Delete Account</div>
             <p style={{ fontSize: '0.85rem', color: 'var(--text2)', marginBottom: 12 }}>
               This permanently deletes your account and all data. This cannot be undone.

@@ -25,6 +25,14 @@ router = APIRouter()
 log = logging.getLogger("uvicorn.error")
 
 
+def _ensure_utc(dt: datetime | None) -> datetime | None:
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
+
+
 def _get_interview_or_404(interview_id: int, db: Session, current_user: User | None = None) -> GuidedInterview:
     interview = db.query(GuidedInterview).filter(GuidedInterview.id == interview_id).first()
     if not interview:
@@ -342,7 +350,7 @@ async def answer_guided_question(
 
     # Check time elapsed
     now = datetime.now(timezone.utc)
-    started = interview.started_at.replace(tzinfo=timezone.utc) if interview.started_at.tzinfo is None else interview.started_at
+    started = _ensure_utc(interview.started_at) or now
     time_elapsed = (now - started).total_seconds()
     time_limit = interview.duration_minutes * 60
     time_up = time_elapsed >= time_limit
@@ -430,7 +438,7 @@ def get_guided_interview(
     )
 
     now = datetime.now(timezone.utc)
-    started = interview.started_at.replace(tzinfo=timezone.utc) if interview.started_at.tzinfo is None else interview.started_at
+    started = _ensure_utc(interview.started_at) or now
     time_elapsed = (now - started).total_seconds()
     time_limit = interview.duration_minutes * 60
     remaining_seconds = max(0, int(time_limit - time_elapsed))
@@ -592,8 +600,8 @@ def end_guided_interview(
     db.commit()
     db.refresh(interview)
 
-    end = interview.completed_at.replace(tzinfo=timezone.utc) if interview.completed_at and interview.completed_at.tzinfo is None else interview.completed_at
-    start = interview.started_at.replace(tzinfo=timezone.utc) if interview.started_at.tzinfo is None else interview.started_at
+    end = _ensure_utc(interview.completed_at) or now
+    start = _ensure_utc(interview.started_at) or now
     time_elapsed = int((end - start).total_seconds())
 
     return {

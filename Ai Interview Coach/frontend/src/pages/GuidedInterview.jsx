@@ -42,7 +42,6 @@ export default function GuidedInterviewPage() {
   const [clarifyingIndex, setClarifyingIndex] = useState(0);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [ttsError, setTtsError] = useState(null);
-  const [clarifyingSubmitting, setClarifyingSubmitting] = useState(false);
   const elevenlabsRef = useRef(null);
   // Stable ref so speakText callback always sees latest ElevenLabsSpeaker instance
   const elevenlabsInstanceRef = useRef(null);
@@ -236,6 +235,10 @@ export default function GuidedInterviewPage() {
       u.rate = 1.0;
       u.onstart = () => setIsSpeaking(true);
       u.onend = () => setIsSpeaking(false);
+      u.onerror = (e) => {
+        console.warn('SpeechSynthesis error:', e);
+        setIsSpeaking(false);
+      };
       window.speechSynthesis.speak(u);
     }
   };
@@ -347,7 +350,7 @@ export default function GuidedInterviewPage() {
             <div style={{
               maxWidth: 640, margin: '80px auto 0', padding: '0 24px',
             }}>
-              <div className="card" style={{
+              <div className="apple-glass" style={{
                 borderLeft: '3px solid var(--red)', color: 'var(--red)',
                 fontSize: '0.9rem', padding: '12px 16px',
               }}>

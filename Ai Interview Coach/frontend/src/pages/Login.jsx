@@ -51,7 +51,6 @@ export default function Login() {
     try {
       const data = await apiLogin(loginEmail, loginPassword);
       setAuth(data.access_token, { user_id: data.user_id, name: data.name, email: data.email });
-
       showToast(`Welcome back, ${data.name}!`, 'success');
     } catch (err) {
       showToast(err.message, 'error');
@@ -70,7 +69,6 @@ export default function Login() {
     try {
       const data = await apiRegister(regName, regEmail, regPassword);
       setAuth(data.access_token, { user_id: data.user_id, name: data.name, email: data.email });
-
       showToast(`Welcome, ${data.name}!`, 'success');
     } catch (err) {
       showToast(err.message, 'error');
@@ -81,10 +79,6 @@ export default function Login() {
 
   return (
     <div className="login-page">
-      <div className="login-bg">
-        <div className="login-bg-gradient" />
-      </div>
-
       <Link to="/" className="login-logo">AI Interview Coach</Link>
 
       <motion.div

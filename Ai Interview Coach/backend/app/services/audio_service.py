@@ -56,5 +56,6 @@ async def save_and_transcribe(file, model):
         "acoustic": acoustic,
         "scores": scores,
         "feedback": feedback_result["general"],
-        "word_analysis": feedback_result["word_analysis"]
+        "word_analysis": feedback_result["word_analysis"],
+        "words": words,
     }

@@ -16,7 +16,9 @@ export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(getInitialTheme);
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
+    const root = document.documentElement;
+    root.setAttribute('data-theme', theme);
+    root.classList.toggle('dark', theme === 'dark');
     try { localStorage.setItem(THEME_KEY, theme); } catch {}
   }, [theme]);
 

@@ -85,7 +85,7 @@ async def upload_resume(
         user_id=current_user.id,
         name=name,
         file_path=str(filepath),
-        raw_text=raw_text[:10000],
+        raw_text=raw_text[:50000],
         skills=json.dumps(skills),
         experience_years=experience_years or None,
         education=json.dumps(education),
@@ -96,7 +96,7 @@ async def upload_resume(
     # Update primary fields on User
     user = db.get(User, current_user.id)
     if not user.resume_text:
-        user.resume_text = raw_text[:10000]
+        user.resume_text = raw_text[:50000]
 
     db.commit()
     db.refresh(resume)
@@ -179,7 +179,7 @@ def set_primary(
     resume.is_primary = True
 
     user = db.get(User, current_user.id)
-    user.resume_text = resume.raw_text[:10000] if resume.raw_text else ""
+    user.resume_text = resume.raw_text[:50000] if resume.raw_text else ""
 
     db.commit()
     return {"message": f"'{resume.name}' set as primary resume"}
@@ -217,7 +217,7 @@ def delete_resume(
         user = db.get(User, current_user.id)
         if remaining:
             remaining.is_primary = True
-            user.resume_text = remaining.raw_text[:10000] if remaining.raw_text else ""
+            user.resume_text = remaining.raw_text[:50000] if remaining.raw_text else ""
         else:
             user.resume_text = ""
 

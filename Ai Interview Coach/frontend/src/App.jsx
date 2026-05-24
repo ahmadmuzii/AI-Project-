@@ -52,7 +52,7 @@ export default function App() {
             <Route path="/practice"  element={<ProtectedRoute><Practice /></ProtectedRoute>} />
             <Route path="/tools"     element={<ProtectedRoute><AITools /></ProtectedRoute>} />
             <Route path="/profile"   element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-            <Route path="/history"   element={<Navigate to="/practice" replace />} />
+            <Route path="/history"   element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
             <Route path="/settings"  element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
             <Route path="/interview/new" element={<ProtectedRoute><GuidedInterviewPage /></ProtectedRoute>} />
             <Route path="/interview/:id" element={<ProtectedRoute><GuidedInterviewPage /></ProtectedRoute>} />

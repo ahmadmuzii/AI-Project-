@@ -75,7 +75,9 @@ function SimpleLineChart({ data, keys, colors }) {
             animate={{ scale: 1 }}
             transition={{ delay: j * 0.05, type: 'spring', stiffness: 300 }}
             whileHover={{ scale: 7 }}
-          />
+          >
+            <title>{d.date ? d.date.slice(0, 10) : 'N/A'} — {k}: {d[k] ?? 0}</title>
+          </motion.circle>
         ))
       ))}
     </svg>
@@ -87,7 +89,7 @@ function HeatmapBars({ data }) {
   if (!entries.length) return null;
 
   return (
-    <div className="card" style={{ marginBottom: 16 }}>
+    <div className="apple-glass" style={{ marginBottom: 16 }}>
       <div className="section-title" style={{ marginBottom: 4 }}>Weak Topic Heatmap</div>
       <div className="section-sub" style={{ marginBottom: 16 }}>Topics needing focus based on evaluations</div>
       {entries.map(([topic, val]) => {
@@ -167,10 +169,6 @@ export default function Dashboard() {
             <div>
               <div className="flex center gap-12" style={{ justifyContent: 'flex-start', flexWrap: 'wrap' }}>
                 <h1 className="section-title" style={{ fontSize: '1.75rem', margin: 0 }}>Dashboard</h1>
-                <span className="grok-badge">
-                  <span style={{ fontSize: '0.9rem', marginRight: 2 }}>⚡</span>
-                  Grok-2 AI Engine
-                </span>
               </div>
               <div className="section-sub" style={{ margin: '4px 0 0 0' }}>Your interview preparation metrics at a glance</div>
             </div>
@@ -204,13 +202,13 @@ export default function Dashboard() {
           )}
 
           {error && (
-            <div className="card" style={{ textAlign: 'center', padding: 40, borderLeft: '4px solid var(--red)', color: 'var(--red)' }}>
+            <div className="apple-glass" style={{ textAlign: 'center', padding: 40, color: 'var(--red)' }}>
               <p style={{ fontWeight: 600 }}>{error}</p>
             </div>
           )}
 
           {!loading && !error && !series.length && (
-            <div className="card" style={{ textAlign: 'center', padding: 80 }}>
+            <div className="apple-glass" style={{ textAlign: 'center', padding: 80 }}>
               <div style={{ fontSize: '3.5rem', marginBottom: 16, filter: 'drop-shadow(0 0 10px rgba(37,99,235,0.2))' }}>📈</div>
               <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: 8 }}>No Performance History</h3>
               <p style={{ color: 'var(--text2)', maxWidth: 440, margin: '0 auto 24px', fontSize: '0.9rem' }}>
@@ -225,35 +223,35 @@ export default function Dashboard() {
           {!loading && !error && series.length > 0 && (
             <>
               {/* Metrics Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, marginBottom: 20 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 20 }}>
                 <motion.div
-                  className="metric"
+                  className="apple-metric"
                   whileHover={{ y: -3, scale: 1.01 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 >
-                  <div className="metric-value" style={{ color: 'var(--blue)', filter: 'drop-shadow(0 0 10px rgba(37,99,235,0.25))' }}>
-                    {streak}🔥
+                  <div className="metric-value" style={{ color: '#1d1d1f' }}>
+                    {streak} 🔥
                   </div>
                   <div className="metric-label">Day Streak</div>
                 </motion.div>
                 
                 <motion.div
-                  className="metric"
+                  className="apple-metric"
                   whileHover={{ y: -3, scale: 1.01 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 >
-                  <div className="metric-value" style={{ color: 'var(--green)', filter: 'drop-shadow(0 0 10px rgba(0,230,118,0.25))' }}>
+                  <div className="metric-value" style={{ color: '#1d1d1f' }}>
                     {readiness ?? 'n/a'}
                   </div>
                   <div className="metric-label">Readiness (days)</div>
                 </motion.div>
                 
                 <motion.div
-                  className="metric"
+                  className="apple-metric"
                   whileHover={{ y: -3, scale: 1.01 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 >
-                  <div className="metric-value" style={{ color: 'var(--purple)', filter: 'drop-shadow(0 0 10px rgba(139,92,246,0.25))' }}>
+                  <div className="metric-value" style={{ color: '#1d1d1f' }}>
                     {percentile != null ? `${percentile}%` : 'n/a'}
                   </div>
                   <div className="metric-label">Peer Percentile</div>
@@ -261,7 +259,7 @@ export default function Dashboard() {
               </div>
 
               {/* Progress Graph */}
-              <div className="card" style={{ marginBottom: 20 }}>
+              <div className="apple-glass" style={{ marginBottom: 20 }}>
                 <div className="flex" style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
                   <div>
                     <h3 className="section-title" style={{ margin: 0 }}>Progress Curve</h3>
@@ -283,7 +281,7 @@ export default function Dashboard() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: 20 }}>
                 <HeatmapBars data={heatmap} />
 
-                <div className="card" style={{ height: 'fit-content' }}>
+                <div className="apple-glass" style={{ height: 'fit-content' }}>
                   <div className="section-title" style={{ marginBottom: 4 }}>Leaderboard</div>
                   <div className="section-sub" style={{ marginBottom: 16 }}>Top performing mock interviews for <span style={{ textTransform: 'capitalize', fontWeight: 600, color: 'var(--blue)' }}>{role}</span></div>
                   

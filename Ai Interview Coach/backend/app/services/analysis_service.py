@@ -450,9 +450,9 @@ def generate_feedback(temporal, fluency, lexical, acoustic, scores, words, trans
 
     if llm_feedback:
         general = llm_feedback
-        print("✅ Using Groq LLM feedback")
+        print("[OK] Using Groq LLM feedback")
     else:
         general = generate_rule_based_feedback(temporal, fluency, lexical, acoustic, scores)
-        print("⚠️  Using rule-based feedback (Groq unavailable)")
+        print("[WARN] Using rule-based feedback (Groq unavailable)")
 
     return {"general": general, "word_analysis": word_analysis}

@@ -30,9 +30,9 @@ export default function Navbar() {
 
   const navLinks = [
     { to: '/dashboard', label: 'Dashboard' },
-    { to: '/interview/new', label: 'Start Interview' },
-    { to: '/practice',  label: 'Review Center' },
-    { to: '/tools',     label: 'AI Tools' },
+    { to: '/interview/new', label: 'Interview' },
+    { to: '/practice',  label: 'Review' },
+    { to: '/tools',     label: 'Tools' },
   ];
 
   const avatarUrl = profile?.avatar_url || null;
@@ -41,12 +41,12 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="nav-inner">
         <Link to="/" className="nav-logo">
-          <span className="nav-logo-icon" style={{ filter: 'drop-shadow(0 0 8px rgba(37,99,235,0.4))' }}>🎙️</span>
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.05rem', fontWeight: 800, background: 'linear-gradient(90deg, #fff, var(--text2))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Interview Coach</span>
+          <span className="nav-logo-icon">🎙️</span>
+          <span>Coach</span>
         </Link>
 
         {user && (
-          <div className="nav-links" style={{ position: 'relative' }}>
+          <div className="nav-links">
             {navLinks.map(l => {
               const isActive = location.pathname === l.to || (l.to === '/practice' && location.pathname.startsWith('/interview/') && !location.pathname.endsWith('/new'));
               return (
@@ -54,7 +54,6 @@ export default function Navbar() {
                   key={l.to}
                   to={l.to}
                   className={`nav-link ${isActive ? 'active' : ''}`}
-                  style={{ position: 'relative', overflow: 'visible', zIndex: 1 }}
                 >
                   <span style={{ position: 'relative', zIndex: 2 }}>{l.label}</span>
                   {isActive && (
@@ -64,9 +63,8 @@ export default function Navbar() {
                       style={{
                         position: 'absolute',
                         inset: 0,
-                        background: 'rgba(37, 99, 235, 0.08)',
-                        border: '1px solid rgba(37, 99, 235, 0.15)',
-                        borderRadius: 'var(--radius-sm)',
+                        background: 'rgba(0,0,0,0.06)',
+                        borderRadius: 999,
                         zIndex: 1,
                       }}
                     />
@@ -80,25 +78,13 @@ export default function Navbar() {
         <div className="nav-right">
           <ThemeToggle />
           {user ? (
-            <div className="nav-user" ref={menuRef} style={{ position: 'relative' }}>
-              <div className="nav-avatar" onClick={() => setMenuOpen(!menuOpen)}
-                style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div className="nav-user" ref={menuRef}>
+              <div className="nav-avatar" onClick={() => setMenuOpen(!menuOpen)}>
                 {avatarUrl ? (
-                  <img src={avatarUrl} alt="avatar"
-                    style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
+                  <img src={avatarUrl} alt="avatar" className="nav-avatar-img" />
                 ) : (
-                  <div style={{
-                    width: 32, height: 32, borderRadius: '50%',
-                    background: 'var(--blue)', color: '#fff',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '0.85rem', fontWeight: 600,
-                  }}>
-                    {user.name?.[0]?.toUpperCase() || '?'}
-                  </div>
+                  user.name?.[0]?.toUpperCase() || '?'
                 )}
-                <span className="hide-mobile" style={{ fontSize: '0.88rem', color: 'var(--text)', fontWeight: 500 }}>
-                  {profile?.display_name || user.name}
-                </span>
               </div>
 
               <AnimatePresence>
@@ -110,42 +96,45 @@ export default function Navbar() {
                     transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                     style={{
                       position: 'absolute', top: '100%', right: 0, marginTop: 8,
-                      minWidth: 200, background: 'var(--bg2)', borderRadius: 12,
-                      border: '1px solid var(--border2)', boxShadow: 'var(--shadow-lg)',
+                      minWidth: 180, background: 'rgba(255,255,255,0.85)',
+                      backdropFilter: 'blur(24px)',
+                      borderRadius: 16, border: '1px solid rgba(255,255,255,0.4)',
+                      boxShadow: '0 12px 40px rgba(0,0,0,0.1)',
                       overflow: 'hidden', zIndex: 100,
                     }}
+                    className="dark:bg-black/80 dark:border-white/10"
                   >
                     <Link to="/profile" onClick={() => setMenuOpen(false)}
                       style={{
-                        display: 'block', padding: '12px 16px', fontSize: '0.88rem',
-                        color: 'var(--text)', textDecoration: 'none',
-                        borderBottom: '1px solid var(--border)',
+                        display: 'block', padding: '12px 16px', fontSize: '13px',
+                        color: '#1d1d1f', textDecoration: 'none',
+                        borderBottom: '1px solid rgba(0,0,0,0.04)',
                         transition: 'background 0.15s',
                       }}
-                      onMouseEnter={(e) => e.target.style.background = 'var(--bg3)'}
+                      onMouseEnter={(e) => e.target.style.background = 'rgba(0,0,0,0.04)'}
                       onMouseLeave={(e) => e.target.style.background = 'transparent'}
                     >
                       Profile
                     </Link>
                     <Link to="/settings" onClick={() => setMenuOpen(false)}
                       style={{
-                        display: 'block', padding: '12px 16px', fontSize: '0.88rem',
-                        color: 'var(--text)', textDecoration: 'none',
-                        borderBottom: '1px solid var(--border)',
+                        display: 'block', padding: '12px 16px', fontSize: '13px',
+                        color: '#1d1d1f', textDecoration: 'none',
+                        borderBottom: '1px solid rgba(0,0,0,0.04)',
                         transition: 'background 0.15s',
                       }}
-                      onMouseEnter={(e) => e.target.style.background = 'var(--bg3)'}
+                      onMouseEnter={(e) => e.target.style.background = 'rgba(0,0,0,0.04)'}
                       onMouseLeave={(e) => e.target.style.background = 'transparent'}
                     >
                       Settings
                     </Link>
                     <button onClick={handleLogout}
                       style={{
-                        display: 'block', width: '100%', padding: '12px 16px', fontSize: '0.88rem',
-                        color: 'var(--red)', background: 'none', border: 'none', cursor: 'pointer',
+                        display: 'block', width: '100%', padding: '12px 16px', fontSize: '13px',
+                        color: '#ff4b5c', background: 'none', border: 'none', cursor: 'pointer',
                         textAlign: 'left', transition: 'background 0.15s',
                       }}
-                      onMouseEnter={(e) => e.target.style.background = 'var(--bg3)'}
+                      onMouseEnter={(e) => e.target.style.background = 'rgba(0,0,0,0.04)'}
                       onMouseLeave={(e) => e.target.style.background = 'transparent'}
                     >
                       Sign Out
@@ -155,9 +144,9 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
           ) : (
-            <Link to="/login" className="btn btn-primary"
-              style={{ padding: '8px 20px', fontSize: '0.88rem' }}>
-              Get Started
+            <Link to="/login" className="nav-link"
+              style={{ color: '#1d1d1f', fontWeight: 600 }}>
+              Sign In
             </Link>
           )}
         </div>

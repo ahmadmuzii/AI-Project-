@@ -48,7 +48,7 @@ async def upload_audio(
     ext = PurePath(file.filename or "audio.wav").suffix.lower()
     if ext not in ALLOWED_AUDIO_EXTENSIONS:
         raise HTTPException(status_code=400, detail=f"Invalid audio format: {ext}. Allowed: {', '.join(sorted(ALLOWED_AUDIO_EXTENSIONS))}")
-    if file.size and file.size > 50 * 1024 * 1024:
+    if (file.size or 0) > 50 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="File too large. Maximum size is 50 MB.")
 
     sess = (

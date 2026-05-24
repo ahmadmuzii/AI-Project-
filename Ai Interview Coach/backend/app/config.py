@@ -10,3 +10,6 @@ GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY", "")
 XAI_API_KEY = os.environ.get("XAI_API_KEY", "")
 GROK_API_KEY = os.environ.get("GROK_API_KEY", "")
+
+JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "aic-secret-key-change-in-production-2026")
+CORS_ORIGINS_CSV = os.environ.get("CORS_ORIGINS", "*")

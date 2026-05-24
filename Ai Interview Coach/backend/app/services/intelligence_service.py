@@ -215,7 +215,7 @@ def analyze_answer_nlp(answer: str, role: str = "general") -> NlpResult:
 
 
 def predict_readiness_days(overall_scores: list[float], target_score: float = 0.8) -> int | None:
-    if len(overall_scores) < 3:
+    if len(overall_scores) < 2:
         return None
     xs = list(range(len(overall_scores)))
     mean_x = sum(xs) / len(xs)
