@@ -215,24 +215,42 @@ def analyze_answer_nlp(answer: str, role: str = "general") -> NlpResult:
 
 
 def predict_readiness_days(overall_scores: list[float], target_score: float = 0.8) -> int | None:
-    if len(overall_scores) < 2:
+    if not overall_scores:
         return None
+
+    avg_score = sum(overall_scores) / len(overall_scores)
+    gap = target_score - avg_score
+    if gap <= 0:
+        return 0
+
+    default_improvement = 0.05
+
+    if len(overall_scores) < 2:
+        days = gap / default_improvement
+        return max(1, int(round(days)))
+
     xs = list(range(len(overall_scores)))
     mean_x = sum(xs) / len(xs)
     mean_y = sum(overall_scores) / len(overall_scores)
     numerator = sum((x - mean_x) * (y - mean_y) for x, y in zip(xs, overall_scores))
     denominator = sum((x - mean_x) ** 2 for x in xs)
-    if denominator == 0:
-        return None
+    if denominator == 0 or numerator == 0:
+        days = gap / default_improvement
+        return max(1, int(round(days)))
+
     slope = numerator / denominator
-    intercept = mean_y - slope * mean_x
     if slope <= 0:
-        return None
+        days = gap / default_improvement
+        return max(1, int(round(days)))
+
+    intercept = mean_y - slope * mean_x
     days_to_target = (target_score - intercept) / slope
     import math
-    if math.isnan(days_to_target) or days_to_target < 0:
-        return 0
-    return int(round(days_to_target))
+    if math.isnan(days_to_target) or days_to_target <= 0:
+        days = gap / default_improvement
+        return max(1, int(round(days)))
+
+    return max(1, int(round(days_to_target)))
 
 
 # ──────────────────────────────────────────────

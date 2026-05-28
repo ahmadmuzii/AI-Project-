@@ -24,6 +24,7 @@ function Toast({ message, type, onClose }) {
 
 export default function Login() {
   const { login: setAuth, user } = useAuth();
+  if (user) return <Navigate to="/dashboard" replace />;
   const [tab, setTab] = useState('login');
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({ message: '', type: '' });
@@ -33,8 +34,6 @@ export default function Login() {
   const [regName, setRegName] = useState('');
   const [regEmail, setRegEmail] = useState('');
   const [regPassword, setRegPassword] = useState('');
-
-  if (user) return <Navigate to="/dashboard" replace />;
 
   function showToast(message, type = '') {
     setToast({ message, type });

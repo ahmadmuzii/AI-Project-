@@ -56,7 +56,7 @@
 /* ── Hero ── */
 .landing-hero {
   min-height: 100vh;
-  background: #000;
+  background: transparent;
   color: #f5f5f7;
   display: flex; align-items: center; justify-content: center;
   padding: 120px 24px 80px;
@@ -166,11 +166,9 @@
   padding: 120px 24px;
   display: flex; flex-direction: column; align-items: center;
 }
-.section-features { background: #f5f5f7; }
-.dark .section-features { background: #000; }
-.section-tech { background: #000; }
-.section-how { background: #f5f5f7; }
-.dark .section-how { background: #000; }
+.section-features { background: #000; }
+.section-tech { background: transparent; }
+.section-how { background: #000; }
 
 .section-header {
   text-align: center; max-width: 640px; margin-bottom: 64px;
@@ -221,16 +219,18 @@
 .feature-icon { font-size: 28px; display: block; margin-bottom: 16px; }
 .feature-title {
   font-size: 17px; font-weight: 600;
-  margin-bottom: 8px; color: #1d1d1f;
+  margin-bottom: 8px; color: #f5f5f7;
 }
-.dark .feature-title { color: #f5f5f7; }
 .feature-desc {
   font-size: 14px; line-height: 1.7;
   color: #86868b;
 }
 
 /* ── Tech ── */
-.section-tech .section-desc-text { color: rgba(255,255,255,0.45); }
+.section-tech .section-title-text { color: #f5f5f7; }
+.dark .section-tech .section-desc-text { color: rgba(255,255,255,0.45); }
+:root:not(.dark) .section-tech .section-title-text { color: #1d1d1f; }
+:root:not(.dark) .section-tech .section-desc-text { color: #86868b; }
 .tech-card { text-align: left; }
 .tech-icon { font-size: 28px; display: block; margin-bottom: 14px; }
 .tech-title {
@@ -255,19 +255,17 @@
 }
 .step-num {
   font-size: 48px; font-weight: 800;
-  color: rgba(0,0,0,0.04);
+  color: #424245;
   display: block; margin-bottom: 8px;
 }
-.dark .step-num { color: rgba(255,255,255,0.04); }
 .step-icon {
   font-size: 32px; display: block; margin-bottom: 16px;
 }
 .step-title {
   font-size: 20px; font-weight: 600;
-  margin-bottom: 12px; color: #1d1d1f;
+  margin-bottom: 12px; color: #f5f5f7;
   letter-spacing: -0.3px;
 }
-.dark .step-title { color: #f5f5f7; }
 .step-desc {
   font-size: 15px; line-height: 1.7;
   color: #86868b;
@@ -276,7 +274,8 @@
 /* ── Footer ── */
 .landing-footer {
   padding: 120px 24px 40px;
-  background: #000; color: #f5f5f7;
+  background: transparent;
+  color: #f5f5f7;
   text-align: center; display: flex;
   flex-direction: column; align-items: center;
 }
@@ -336,4 +335,48 @@
 }
 @media (max-width: 640px) {
   .landing-nav-links { display: none; }
+}
+
+.hero-title .typewriter-cursor {
+  font-size: clamp(36px, 6vw, 68px);
+  vertical-align: baseline;
+}
+
+/* ── Light mode hero text ── */
+:root:not(.dark) .hero-label { color: rgba(0,0,0,0.4); }
+:root:not(.dark) .hero-title { color: #1d1d1f; }
+:root:not(.dark) .hero-sub { color: rgba(0,0,0,0.5); }
+:root:not(.dark) .hero-btn-secondary {
+  color: rgba(0,0,0,0.6); border-color: rgba(0,0,0,0.15);
+}
+:root:not(.dark) .hero-btn-secondary:hover { background: rgba(0,0,0,0.05); color: #000; }
+
+/* ── Light mode hero card ── */
+:root:not(.dark) .hero-card {
+  background: rgba(255,255,255,0.85);
+  border-color: rgba(0,0,0,0.06);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.06);
+}
+:root:not(.dark) .hc-question,
+:root:not(.dark) .hc-confidence { background: rgba(0,0,0,0.03); }
+:root:not(.dark) .hc-label { color: rgba(0,0,0,0.4); }
+:root:not(.dark) .hc-value { color: #1d1d1f; }
+:root:not(.dark) .hc-bar { background: rgba(0,0,0,0.08); }
+:root:not(.dark) .hc-bar-fill { background: #1d1d1f; }
+
+/* ── Cursor Ripple (Light Mode) ── */
+.cursor-ripple {
+  position: fixed;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.15);
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  animation: rippleAnim 0.8s ease-out forwards;
+  z-index: 9998;
+}
+@keyframes rippleAnim {
+  0%   { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
 }

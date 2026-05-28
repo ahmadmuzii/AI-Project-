@@ -134,7 +134,7 @@ def list_sessions(
                     scores.append(m.overall)
                 if m.confidence > 0:
                     confs.append(m.confidence)
-        overall = round(sum(scores) / len(scores), 1) if scores else 0
+        overall = round((sum(scores) / len(scores)) * 100, 1) if scores else 0
         confidence = round(sum(confs) / len(confs), 2) if confs else 0
         if overall != s.overall_score or confidence != s.avg_confidence:
             s.overall_score = overall

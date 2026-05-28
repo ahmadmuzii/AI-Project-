@@ -205,7 +205,7 @@ export default function WebcamOverlay({ onMetrics }) {
   }
 
   return (
-    <div className="card" style={{ padding: 0, overflow: 'hidden', position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000' }}>
+    <div className="apple-glass" style={{ padding: 0, overflow: 'hidden', position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000' }}>
       <video ref={videoRef} style={{ display: 'none' }} playsInline />
       <canvas
         ref={canvasRef}

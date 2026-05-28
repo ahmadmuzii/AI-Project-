@@ -260,7 +260,7 @@ export default function Practice() {
                   
                   {/* Session Overview Header */}
                   {currentPracticeSess && (
-                    <div className="card-glass" style={{ padding: 20, marginBottom: 16, border: '1px solid var(--border)' }}>
+                    <div className="apple-glass" style={{ padding: 20, marginBottom: 16, border: '1px solid var(--border)' }}>
                       <div className="flex" style={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
                         <div>
                           <div style={{ fontSize: '0.8rem', color: 'var(--blue)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Selected Session</div>

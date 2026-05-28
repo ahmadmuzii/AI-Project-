@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 export default function WordAnalysis({ items = [] }) {
   if (!items.length) {
     return (
-      <div className="card" style={{ color: 'var(--text2)', fontSize: '0.9rem' }}>
+      <div className="apple-glass" style={{ color: 'var(--text2)', fontSize: '0.9rem' }}>
         No word-level issues flagged. Clean delivery!
       </div>
     );
@@ -11,7 +11,7 @@ export default function WordAnalysis({ items = [] }) {
 
   return (
     <motion.div
-      className="card" style={{ padding: 0, overflow: 'hidden' }}
+      className="apple-glass" style={{ padding: 0, overflow: 'hidden' }}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}

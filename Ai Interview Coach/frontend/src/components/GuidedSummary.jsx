@@ -30,7 +30,7 @@ export default function GuidedSummary({ interview, onRetry }) {
     <div style={{ maxWidth: 800, margin: '0 auto', padding: '80px 24px 40px' }}>
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         {/* Hero Score */}
-        <div className="card" style={{ textAlign: 'center', padding: 40, marginBottom: 16 }}>
+        <div className="apple-glass" style={{ textAlign: 'center', padding: 40, marginBottom: 16 }}>
           <div style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 4, color: 'var(--text)' }}>
             Interview Complete
           </div>
@@ -58,7 +58,7 @@ export default function GuidedSummary({ interview, onRetry }) {
         </div>
 
         {/* Score breakdown */}
-        <div className="card" style={{ padding: 24, marginBottom: 16 }}>
+        <div className="apple-glass" style={{ padding: 24, marginBottom: 16 }}>
           <div className="section-title" style={{ marginBottom: 16 }}>Score Breakdown</div>
           <div className="flex" style={{ gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
             {qaPairs.length > 0 && (
@@ -74,7 +74,7 @@ export default function GuidedSummary({ interview, onRetry }) {
 
         {/* LLM Summary */}
         {summary.summary && (
-          <div className="card" style={{ padding: 24, marginBottom: 16 }}>
+          <div className="apple-glass" style={{ padding: 24, marginBottom: 16 }}>
             <div className="section-title" style={{ marginBottom: 8 }}>Coach Feedback</div>
             <p style={{ color: 'var(--text)', lineHeight: 1.7, fontSize: '0.95rem', whiteSpace: 'pre-wrap' }}>
               {summary.summary}
@@ -84,7 +84,7 @@ export default function GuidedSummary({ interview, onRetry }) {
 
         {/* Strengths */}
         {summary.strengths?.length > 0 && (
-          <div className="card" style={{ padding: 24, marginBottom: 16 }}>
+          <div className="apple-glass" style={{ padding: 24, marginBottom: 16 }}>
             <div className="section-title" style={{ marginBottom: 12 }}>Strengths</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {summary.strengths.map((s, i) => (
@@ -99,7 +99,7 @@ export default function GuidedSummary({ interview, onRetry }) {
 
         {/* Top Improvements */}
         {summary.top_improvements?.length > 0 && (
-          <div className="card" style={{ padding: 24, marginBottom: 16 }}>
+          <div className="apple-glass" style={{ padding: 24, marginBottom: 16 }}>
             <div className="section-title" style={{ marginBottom: 12 }}>Top Improvements</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {summary.top_improvements.map((imp, i) => (
@@ -114,7 +114,7 @@ export default function GuidedSummary({ interview, onRetry }) {
 
         {/* Action Plan */}
         {summary.action_plan?.length > 0 && (
-          <div className="card" style={{ padding: 24, marginBottom: 16 }}>
+          <div className="apple-glass" style={{ padding: 24, marginBottom: 16 }}>
             <div className="section-title" style={{ marginBottom: 12 }}>Action Plan</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {summary.action_plan.map((step, i) => (
@@ -135,7 +135,7 @@ export default function GuidedSummary({ interview, onRetry }) {
         )}
 
         {/* Per-question accordion */}
-        <div className="card" style={{ padding: 24, marginBottom: 16 }}>
+        <div className="apple-glass" style={{ padding: 24, marginBottom: 16 }}>
           <div className="section-title" style={{ marginBottom: 12 }}>Question Review</div>
           {qaPairs.length === 0 && (
             <p style={{ color: 'var(--text2)', textAlign: 'center', padding: 20 }}>No answers recorded.</p>

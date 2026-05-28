@@ -108,7 +108,7 @@ export default function ChatSession({
 
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: '80px 24px 0', height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <div className="card" style={{ padding: '12px 20px', marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+      <div className="apple-glass" style={{ padding: '12px 20px', marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
         <div className="flex" style={{ alignItems: 'center', gap: 16 }}>
           <div style={{ fontVariantNumeric: 'tabular-nums', fontSize: '1.3rem', fontWeight: 700, color: timer < 60 ? 'var(--red)' : 'var(--text)' }}>
             {formatTime(timer)}
@@ -144,11 +144,11 @@ export default function ChatSession({
             >
               {msg.type === 'question' && (
                 <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                  <div className="card" style={{ maxWidth: '75%', padding: '16px 20px', background: 'var(--bg3)' }}>
+                  <div className="apple-glass" style={{ maxWidth: '85%', padding: '16px 20px', background: 'var(--bg3)' }}>
                     <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--blue)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>
                       Interviewer
                     </div>
-                    <div style={{ fontSize: '0.95rem', lineHeight: 1.6, color: 'var(--text)' }}>
+                    <div style={{ fontSize: '0.9rem', lineHeight: 1.5, color: 'var(--text)' }}>
                       {msg.content}
                     </div>
                   </div>
@@ -156,14 +156,14 @@ export default function ChatSession({
               )}
               {msg.type === 'answer' && (
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <div style={{ maxWidth: '75%', padding: '14px 18px', borderRadius: '16px 16px 4px 16px', background: 'var(--blue)', color: '#fff', fontSize: '0.95rem', lineHeight: 1.5 }}>
+                  <div style={{ maxWidth: '85%', padding: '14px 18px', borderRadius: '16px 16px 4px 16px', background: 'var(--blue)', color: '#fff', fontSize: '0.9rem', lineHeight: 1.5 }}>
                     {msg.content}
                   </div>
                 </div>
               )}
               {msg.type === 'feedback' && (
                 <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                  <div className="card" style={{ maxWidth: '85%', padding: 16, background: 'var(--bg3)' }}>
+                  <div className="apple-glass" style={{ maxWidth: '90%', padding: 16, background: 'var(--bg3)' }}>
                     <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>
                       Feedback
                     </div>
@@ -176,7 +176,7 @@ export default function ChatSession({
                       </div>
                     )}
                     {msg.feedback && (
-                      <div style={{ color: 'var(--text2)', fontSize: '0.88rem', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+                      <div style={{ color: 'var(--text2)', fontSize: '0.85rem', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
                         {msg.feedback}
                       </div>
                     )}
@@ -200,7 +200,7 @@ export default function ChatSession({
             animate={{ opacity: 1 }}
             style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 12 }}
           >
-            <div className="card" style={{ padding: '12px 16px', background: 'var(--bg3)' }}>
+            <div className="apple-glass" style={{ padding: '12px 16px', background: 'var(--bg3)' }}>
               <div className="flex" style={{ alignItems: 'center', gap: 8 }}>
                 <div className="spinner" />
                 <span style={{ fontSize: '0.85rem', color: 'var(--text2)' }}>Analyzing your answer...</span>
@@ -213,7 +213,7 @@ export default function ChatSession({
       </div>
 
       <div style={{ paddingBottom: 24, flexShrink: 0 }}>
-        <div className="card" style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '12px 16px' }}>
+        <div className="apple-glass" style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '12px 16px' }}>
           <input
             ref={inputRef}
             type="text"

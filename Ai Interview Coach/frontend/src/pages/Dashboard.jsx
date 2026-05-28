@@ -69,7 +69,7 @@ function SimpleLineChart({ data, keys, colors }) {
             cy={h - pad - ((d[k] || 0) / max) * (h - pad * 2)}
             r={4}
             fill={colors[i]}
-            stroke="var(--bg)"
+            style={{ stroke: 'var(--bg)' }}
             strokeWidth={1.5}
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -229,7 +229,7 @@ export default function Dashboard() {
                   whileHover={{ y: -3, scale: 1.01 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 >
-                  <div className="metric-value" style={{ color: '#1d1d1f' }}>
+                  <div className="metric-value" style={{ color: 'var(--text)' }}>
                     {streak} 🔥
                   </div>
                   <div className="metric-label">Day Streak</div>
@@ -240,8 +240,8 @@ export default function Dashboard() {
                   whileHover={{ y: -3, scale: 1.01 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 >
-                  <div className="metric-value" style={{ color: '#1d1d1f' }}>
-                    {readiness ?? 'n/a'}
+                  <div className="metric-value" style={{ color: 'var(--text)' }}>
+                    {readiness === 0 ? 'Ready!' : (readiness ? `${readiness}d` : 'n/a')}
                   </div>
                   <div className="metric-label">Readiness (days)</div>
                 </motion.div>
@@ -251,7 +251,7 @@ export default function Dashboard() {
                   whileHover={{ y: -3, scale: 1.01 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 >
-                  <div className="metric-value" style={{ color: '#1d1d1f' }}>
+                  <div className="metric-value" style={{ color: 'var(--text)' }}>
                     {percentile != null ? `${percentile}%` : 'n/a'}
                   </div>
                   <div className="metric-label">Peer Percentile</div>

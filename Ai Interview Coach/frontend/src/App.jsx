@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import GlobalEffects from './components/GlobalEffects';
 import OnboardingModal from './components/OnboardingModal';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -44,6 +45,7 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <GlobalEffects />
         <OnboardingGate>
           <Routes>
             <Route path="/"         element={<Landing />} />

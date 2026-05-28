@@ -145,7 +145,7 @@ export default function GuidedSession({
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: '80px 24px 40px' }}>
       {/* Top bar */}
-      <div className="card" style={{ padding: '12px 20px', marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div className="apple-glass" style={{ padding: '12px 20px', marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div className="flex" style={{ alignItems: 'center', gap: 16 }}>
           <div style={{ fontVariantNumeric: 'tabular-nums', fontSize: '1.3rem', fontWeight: 700, color: timer < 60 ? 'var(--red)' : 'var(--text)' }}>
             {formatTime(timer)}
@@ -167,7 +167,7 @@ export default function GuidedSession({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.35 }}
-          className="card"
+          className="apple-glass"
           style={{ padding: 28, marginBottom: 16 }}
         >
           <div className="flex" style={{ alignItems: 'flex-start', gap: 12 }}>
@@ -196,7 +196,7 @@ export default function GuidedSession({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3, delay: 0.15 }}
-        className="card"
+        className="apple-glass"
         style={{ padding: 24, marginBottom: 16 }}
       >
         <AudioRecorder
@@ -219,7 +219,7 @@ export default function GuidedSession({
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 16 }}
-            className="card"
+            className="apple-glass"
             style={{ padding: 20 }}
           >
             <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text2)', marginBottom: 12 }}>

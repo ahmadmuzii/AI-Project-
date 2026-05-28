@@ -83,7 +83,7 @@ export default function ResumeManager({ compact = false }) {
   return (
     <div>
       {error && (
-        <div className="card" style={{ padding: '10px 14px', marginBottom: 12, borderLeft: '3px solid var(--red)', color: 'var(--red)', fontSize: '0.82rem' }}>
+        <div className="apple-glass" style={{ padding: '10px 14px', marginBottom: 12, borderLeft: '3px solid var(--red)', color: 'var(--red)', fontSize: '0.82rem' }}>
           {error}
           <button className="btn btn-secondary" style={{ marginLeft: 8, padding: '2px 8px', fontSize: '0.7rem' }} onClick={() => setError(null)}>✕</button>
         </div>
@@ -109,7 +109,7 @@ export default function ResumeManager({ compact = false }) {
       <AnimatePresence>
         {showManual && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
-            <div className="card" style={{ marginBottom: 12 }}>
+            <div className="apple-glass" style={{ padding: 24, marginBottom: 12 }}>
               <div className="flex" style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <span style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text)' }}>Manual Entry</span>
                 <button className="btn btn-secondary" onClick={() => setShowManual(false)}

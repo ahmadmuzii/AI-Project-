@@ -97,7 +97,7 @@ export default function GuidedSetup({ profile, onStart, loading }) {
   };
 
   return (
-    <div style={{ maxWidth: 640, margin: '0 auto', padding: '80px 24px 40px' }}>
+    <div style={{ maxWidth: 800, margin: '0 auto', padding: '80px 24px 40px' }}>
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <div style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: 4, color: 'var(--text)' }}>
           Guided Interview
@@ -121,7 +121,7 @@ export default function GuidedSetup({ profile, onStart, loading }) {
         {/* Step 0: Resume */}
         {step === 0 && (
           <motion.div key="s0" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-            <div className="card" style={{ padding: 24 }}>
+            <div className="apple-glass" style={{ padding: 24 }}>
               <div style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: 8, color: 'var(--text)' }}>Resume Check</div>
               <p style={{ color: 'var(--text2)', marginBottom: 16, lineHeight: 1.5 }}>
                 Your resume helps us tailor questions. {hasResume ? 'You already have one.' : 'Upload one below.'}
@@ -142,13 +142,13 @@ export default function GuidedSetup({ profile, onStart, loading }) {
         {/* Step 1: Details */}
         {step === 1 && (
           <motion.div key="s1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-            <div className="card" style={{ padding: 24, marginBottom: 16 }}>
+            <div className="apple-glass" style={{ padding: 24, marginBottom: 16 }}>
               <div className="section-title" style={{ marginBottom: 4 }}>Aim / Purpose</div>
               <div className="section-sub" style={{ margin: '0 0 12px' }}>Why are you doing this interview?</div>
               <textarea className="input" rows={3} placeholder="e.g. Preparing for a senior backend role at Google" value={aim} onChange={e => setAim(e.target.value)} style={{ width: '100%', resize: 'vertical' }} />
             </div>
 
-            <div className="card" style={{ padding: 24, marginBottom: 16 }}>
+            <div className="apple-glass" style={{ padding: 24, marginBottom: 16 }}>
               <div className="section-title" style={{ marginBottom: 4 }}>Target Company</div>
               <div className="section-sub" style={{ margin: '0 0 12px' }}>Which company? (optional)</div>
               <div className="flex" style={{ flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
@@ -163,7 +163,7 @@ export default function GuidedSetup({ profile, onStart, loading }) {
               <input className="input" placeholder="Or type..." value={targetCompany} onChange={e => setTargetCompany(e.target.value)} style={{ width: '100%' }} />
             </div>
 
-            <div className="card" style={{ padding: 24, marginBottom: 16 }}>
+            <div className="apple-glass" style={{ padding: 24, marginBottom: 16 }}>
               <div className="section-title" style={{ marginBottom: 4 }}>Duration</div>
               <div className="section-sub" style={{ margin: '0 0 12px' }}>How long? <strong>{durationMinutes} min</strong></div>
               <input
@@ -185,7 +185,7 @@ export default function GuidedSetup({ profile, onStart, loading }) {
               </div>
             </div>
 
-            <div className="card" style={{ padding: 24, marginBottom: 16 }}>
+            <div className="apple-glass" style={{ padding: 24, marginBottom: 16 }}>
               <div className="section-title" style={{ marginBottom: 4 }}>Difficulty</div>
               <div className="section-sub" style={{ margin: '0 0 12px' }}>How challenging?</div>
               <div className="flex" style={{ gap: 8 }}>
@@ -197,7 +197,7 @@ export default function GuidedSetup({ profile, onStart, loading }) {
               </div>
             </div>
 
-            <div className="card" style={{ padding: 24, marginBottom: 16 }}>
+            <div className="apple-glass" style={{ padding: 24, marginBottom: 16 }}>
               <div className="section-title" style={{ marginBottom: 4 }}>Focus Areas</div>
               <div className="section-sub" style={{ margin: '0 0 12px' }}>Topics to emphasize</div>
               <div className="flex" style={{ flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
@@ -259,7 +259,7 @@ export default function GuidedSetup({ profile, onStart, loading }) {
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
-                className="card"
+                className="apple-glass"
                 style={{ padding: 24, marginBottom: 16, overflow: 'hidden' }}
               >
                 <div className="section-title" style={{ marginBottom: 4 }}>AI Interviewer Avatar</div>
@@ -309,7 +309,7 @@ export default function GuidedSetup({ profile, onStart, loading }) {
             )}
 
             {/* ElevenLabs Voice Toggle */}
-            <div className="card" style={{ padding: 24, marginBottom: 16 }}>
+            <div className="apple-glass" style={{ padding: 24, marginBottom: 16 }}>
               <div className="flex" style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: useElevenLabs ? 12 : 0 }}>
                 <div>
                   <div className="section-title" style={{ marginBottom: 2 }}>ElevenLabs Voice</div>

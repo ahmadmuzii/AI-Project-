@@ -50,7 +50,7 @@ export default function MovementSuggestions({ metrics }) {
   if (!metrics) return null;
 
   return (
-    <div className="card" style={{ padding: 16 }}>
+    <div className="apple-glass" style={{ padding: 16 }}>
       <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text2)', marginBottom: 12 }}>
         Live Coaching
       </div>

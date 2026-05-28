@@ -1,7 +1,8 @@
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
-import { useAuth } from '../context/AuthContext';
+import Typewriter from '../components/Typewriter';
+import useMagnetic from '../hooks/useMagnetic';
 import './Landing.css';
 
 const featureData = [
@@ -24,11 +25,11 @@ const techData = [
 
 const stepsData = [
   { num: '01', icon: '🎙️', title: 'Record Your Answer', desc: 'Use your microphone or upload an audio file. Speak naturally as you would in a real interview.' },
-  { num: '02', icon: '🤖', title: 'AI Analyzes Everything', desc: 'Whisper transcribes your speech. librosa extracts 40+ acoustic features. NLP scores your content structure.' },
+  { num: '02', icon: '🤖', title: 'AI Analyzes Everything', desc: 'Your speech is transcribed and analyzed for pace, clarity, and vocal variety. NLP evaluates your content structure and relevance.' },
   { num: '03', icon: '📈', title: 'Get Actionable Feedback', desc: 'Review your transcript, scores, word-level analysis, and AI coaching tips. Track your growth over time.' },
 ];
 
-function SectionHeader({ title, desc, light }) {
+function SectionHeader({ title, desc, light, typewriterText }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-80px' });
   return (
@@ -39,7 +40,11 @@ function SectionHeader({ title, desc, light }) {
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
     >
-      <h2 className="section-title-text">{title}</h2>
+      <h2 className="section-title-text">
+        {typewriterText ? (
+          <Typewriter text={typewriterText} speed={40} startWhen={inView} />
+        ) : title}
+      </h2>
       {desc && <p className="section-desc-text">{desc}</p>}
     </motion.div>
   );
@@ -100,9 +105,26 @@ function StepCard({ num, icon, title, desc, index }) {
   );
 }
 
+function Magnetic({ children, className = '' }) {
+  const { ref, pos, handleMouseMove, handleMouseLeave } = useMagnetic();
+  return (
+    <motion.div
+      ref={ref}
+      className={className}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      animate={{ x: pos.x, y: pos.y }}
+      transition={{ type: 'spring', stiffness: 150, damping: 15, mass: 0.5 }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 export default function Landing() {
-  const { user } = useAuth();
   const heroRef = useRef(null);
+  const footerRef = useRef(null);
+  const footerInView = useInView(footerRef, { once: true, margin: '-80px' });
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 0.75]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
@@ -117,11 +139,7 @@ export default function Landing() {
             <a href="#features" className="landing-nav-link">Features</a>
             <a href="#how" className="landing-nav-link">How it Works</a>
           </div>
-          {user ? (
-            <Link to="/dashboard" className="landing-nav-cta">Dashboard</Link>
-          ) : (
-            <Link to="/login" className="landing-nav-cta">Get Started</Link>
-          )}
+          <Magnetic><Link to="/login" className="landing-nav-cta">Get Started</Link></Magnetic>
         </div>
       </nav>
 
@@ -131,14 +149,16 @@ export default function Landing() {
           <div className="hero-left">
             <p className="hero-label">AI Interview Coach</p>
             <h1 className="hero-title">
-              Practice smarter.<br />Get hired faster.
+              <Typewriter text="Practice smarter." speed={50} startWhen={true} />
+              <br />
+              <Typewriter text="Get hired faster." speed={50} delay={1400} startWhen={true} />
             </h1>
             <p className="hero-sub">
               Personalized AI interviews with real-time feedback, confidence scoring, and behavioral analysis.
             </p>
             <div className="hero-ctas">
-              <Link to="/login" className="hero-btn-primary">Get Started</Link>
-              <a href="#features" className="hero-btn-secondary">Learn More</a>
+              <Magnetic><Link to="/login" className="hero-btn-primary">Get Started</Link></Magnetic>
+              <Magnetic><a href="#features" className="hero-btn-secondary">Learn More</a></Magnetic>
             </div>
           </div>
           <div className="hero-right">
@@ -171,7 +191,7 @@ export default function Landing() {
 
       {/* Features */}
       <section id="features" className="section-block section-features">
-        <SectionHeader title="Everything you need to ace the interview." desc="AI-powered tools to analyze, improve, and track your performance." />
+        <SectionHeader title="Everything you need to ace the interview." typewriterText="Everything you need to ace the interview." desc="AI-powered tools to analyze, improve, and track your performance." />
         <div className="grid-3">
           {featureData.map((f, i) => (
             <FeatureCard key={f.title} {...f} index={i} />
@@ -181,7 +201,7 @@ export default function Landing() {
 
       {/* Tech */}
       <section className="section-block section-tech">
-        <SectionHeader title="Built with cutting-edge AI." desc="Powered by industry-leading machine learning and web frameworks." light />
+        <SectionHeader title="Built with cutting-edge AI." typewriterText="Built with cutting-edge AI." desc="Powered by industry-leading machine learning and web frameworks." light />
         <div className="grid-3">
           {techData.map((t, i) => (
             <TechCard key={t.title} {...t} index={i} />
@@ -191,7 +211,7 @@ export default function Landing() {
 
       {/* How it Works */}
       <section id="how" className="section-block section-how">
-        <SectionHeader title="How it works." desc="Three simple steps to interview mastery." />
+        <SectionHeader title="How it works." typewriterText="How it works." desc="Three simple steps to interview mastery." />
         <div className="steps-row">
           {stepsData.map((s, i) => (
             <StepCard key={s.num} {...s} index={i} />
@@ -203,30 +223,22 @@ export default function Landing() {
       <footer className="landing-footer">
         <div className="landing-footer-content">
           <motion.h2
+            ref={footerRef}
             className="footer-title"
             initial={{ opacity: 0, y: 60 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            animate={footerInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           >
-            Start your<br />practice today.
+            <Typewriter text="Start your practice today." speed={45} startWhen={footerInView} />
           </motion.h2>
-          <motion.p
-            className="footer-sub"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          >
-            Semester project — AI, Spring 2026
-          </motion.p>
+
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
           >
-            <Link to="/login" className="footer-cta">Get Started</Link>
+            <Magnetic><Link to="/login" className="footer-cta">Get Started</Link></Magnetic>
           </motion.div>
           <motion.div
             className="footer-divider"

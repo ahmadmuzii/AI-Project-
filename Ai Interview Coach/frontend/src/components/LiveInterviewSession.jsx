@@ -20,7 +20,7 @@ function MetricCard({ value, label, color, icon }) {
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="card"
+      className="apple-glass"
       style={{ padding: '10px 14px', minWidth: 100, textAlign: 'center', flex: 1 }}
     >
       <div style={{ fontSize: '1rem', marginBottom: 1 }}>{icon}</div>
@@ -398,7 +398,7 @@ export default function LiveInterviewSession({
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="card"
+            className="apple-glass"
             style={{
               flex: '0 0 280px',
               padding: 20,
@@ -407,7 +407,6 @@ export default function LiveInterviewSession({
               border: avatarState === 'speaking'
                 ? '2px solid rgba(52,168,83,0.4)'
                 : '1px solid rgba(255,255,255,0.06)',
-              borderRadius: 20,
             }}
           >
             <div style={{
@@ -473,7 +472,7 @@ export default function LiveInterviewSession({
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="card"
+          className="apple-glass"
           style={{
             padding: '12px 20px', textAlign: 'center', flexShrink: 0,
             background: isGreeting ? 'rgba(147,52,230,0.08)' : 'rgba(26,115,232,0.08)',
@@ -485,7 +484,7 @@ export default function LiveInterviewSession({
               Quick Question {clarifyingIndex + 1} of {clarifyingQuestions?.length || 0}
             </div>
           )}
-          <div style={{ fontSize: '1rem', color: 'var(--text)', lineHeight: 1.5 }}>
+          <div style={{ fontSize: '0.9rem', color: 'var(--text)', lineHeight: 1.4 }}>
             {questionText}
           </div>
         </motion.div>

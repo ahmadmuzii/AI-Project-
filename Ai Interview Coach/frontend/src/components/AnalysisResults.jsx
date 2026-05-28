@@ -26,7 +26,7 @@ export default function AnalysisResults({ analysis }) {
         <ScoreGauge score={scores.overall || 0} label="Overall" color="var(--red)" delay={0.3} />
       </div>
 
-      <div className="card" style={{ marginBottom: 16 }}>
+      <div className="apple-glass" style={{ padding: 24, marginBottom: 16 }}>
         <div className="section-title" style={{ marginBottom: 12 }}>NLP Analysis</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
           <div className="metric">
@@ -56,14 +56,14 @@ export default function AnalysisResults({ analysis }) {
       </div>
 
       {transcript && (
-        <div className="card" style={{ marginBottom: 16 }}>
+        <div className="apple-glass" style={{ padding: 24, marginBottom: 16 }}>
           <div className="section-title" style={{ marginBottom: 8 }}>Transcript</div>
           <p style={{ color: 'var(--text2)', lineHeight: 1.7, fontSize: '0.9rem' }}>{transcript}</p>
         </div>
       )}
 
       {feedback && (
-        <div className="card" style={{ marginBottom: 16, borderLeft: '3px solid var(--green)' }}>
+        <div className="apple-glass" style={{ padding: 24, marginBottom: 16, borderLeft: '3px solid var(--green)' }}>
           <div className="section-title" style={{ marginBottom: 8 }}>Coaching Feedback</div>
           <p style={{ color: 'var(--text2)', lineHeight: 1.7, fontSize: '0.9rem', whiteSpace: 'pre-wrap' }}>{feedback}</p>
         </div>
