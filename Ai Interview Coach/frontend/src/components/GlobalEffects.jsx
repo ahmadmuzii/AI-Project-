@@ -38,7 +38,6 @@ export default function GlobalEffects() {
 
   return (
     <>
-      <div className="mesh-bg" />
       <ParticleField />
 
       {blurOrbs.map((orb, i) => {
