@@ -43,12 +43,13 @@ You speak (or type) an answer → the backend transcribes it with **OpenAI Whisp
 
 ## 🙋 My Role
 
-Team project built with **M. Hannan Najeeb** and **Ameer Hamza**. I owned this repository and was responsible for:
+A three-person team project. I led the engineering; work was divided as follows:
 
-- 🔗 **Integration & repository ownership** — merged the team's work into the final codebase, restructured the project and maintained the repo.
-- 📊 **Interview analytics** — dashboard, progress and session-summary analytics end-to-end (API routes + React views).
-- 🐛 **Stabilisation** — the final bug-fixing passes across backend and frontend before submission, plus UI fixes.
-- 📝 **Documentation** — this README, the pitch deck and project documentation.
+| Member | Contribution |
+|---|---|
+| **Muhammad Ahmad** — *Lead engineer* ([@ahmadmuzii](https://github.com/ahmadmuzii)) | 🏗️ **Architecture & codebase design** — designed the FastAPI routes → services → models layering, the database schema and the React app structure<br/>⚡ **Real-time live interview** — built the live interview flow: recording, transcription, instant scoring and webcam body-language feedback while the user is answering<br/>🤖 **AI pipeline** — Grok → Groq → rule-based fallback chain and the scoring pipeline<br/>🐛 **Debugging & stabilisation** — found and fixed bugs across backend and frontend, removed dead code, made the app demo-ready<br/>🔗 **Integration & repo ownership** — merged the team's work into one codebase; built the analytics dashboard |
+| **M. Hannan Najeeb** — *Documentation lead* | 📝 Wrote the complete project documentation — README, technical write-up and project report |
+| **Ameer Hamza** — *Resume intelligence* | 📄 **Resume analysis module** — PDF extraction (pdfplumber → PyPDF2 → pdfminer fallback) and resume-aware question tailoring<br/>🏢 Compiled the company interview profiles and the 200-question seed bank<br/>🧪 UI testing and bug reporting |
 
 ---
 
@@ -232,9 +233,9 @@ Ai Interview Coach/
 
 | | |
 |---|---|
-| **Muhammad Ahmad** | [@ahmadmuzii](https://github.com/ahmadmuzii) |
-| **M. Hannan Najeeb** | Team member |
-| **Ameer Hamza** | Team member |
+| **Muhammad Ahmad** | Lead engineer — architecture, real-time interview, AI pipeline, debugging · [@ahmadmuzii](https://github.com/ahmadmuzii) |
+| **M. Hannan Najeeb** | Documentation |
+| **Ameer Hamza** | Resume intelligence, company profiles & question bank |
 
 <p align="center"><b>One interview at a time. 🚀</b></p>
 
